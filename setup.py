@@ -43,6 +43,14 @@ setup(
     download_url=DOWNLOAD_URL,
     classifiers=CLASSIFIERS,
     project_urls=PROJECT_URLS,
-    packages=find_packages(),
     python_requires='>=3.11',
+    package_dir={
+        '': 'src'
+    },
+    packages=find_packages('src'),
+    entry_points={
+        'console_scripts': [
+            'pacdb = pacdb.cli:main'
+        ]
+    }
 )

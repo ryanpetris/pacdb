@@ -2,8 +2,8 @@
 
 import os
 
-from .dbreader import DbReader
-from .sqldb import SqlWriter
+from ..dbreader import DbReader
+from ..sqldb import SqlWriter
 
 PACMAN_SYNC_DIR = "/var/lib/pacman/sync"
 PACDB_DIR = "/var/lib/pacdb"
