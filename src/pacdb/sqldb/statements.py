@@ -7,18 +7,25 @@ insert_package_stmt = """
         (:db, :package, :base, :version, :architecture, :description, :url, :download_bytes, :installed_bytes, :pgp_signature, :build_timestamp, :packager, :filename);
 """
 
-insert_package_sum_stmt = """
-    INSERT INTO package_sums
+insert_sums_stmt = """
+    INSERT INTO sums
         (db, package, type, sum)
     VALUES
         (:db, :package, :type, :sum);
 """
 
-insert_package_license_stmt = """
-    INSERT INTO package_license
+insert_licenses_stmt = """
+    INSERT INTO licenses
         (db, package, license)
     VALUES
         (:db, :package, :license);
+"""
+
+insert_groups_stmt = """
+    INSERT INTO groups
+        (db, package, group_name)
+    VALUES
+        (:db, :package, :group_name);
 """
 
 insert_depends_stmt = """

@@ -4,8 +4,9 @@ import re
 import sqlite3
 
 from .initdb import init_db_data
-from .statements import insert_package_stmt, insert_package_sum_stmt, insert_package_license_stmt, insert_depends_stmt, insert_make_depends_stmt, insert_check_depends_stmt, insert_opt_depends_stmt, insert_provides_stmt, insert_conflicts_stmt, insert_replaces_stmt
+from .statements import insert_package_stmt, insert_sums_stmt, insert_licenses_stmt, insert_groups_stmt, insert_depends_stmt, insert_make_depends_stmt, insert_check_depends_stmt, insert_opt_depends_stmt, insert_provides_stmt, insert_conflicts_stmt, insert_replaces_stmt
 from typing import Dict
+
 
 class SqlWriter:
     @property
@@ -31,8 +32,9 @@ class SqlWriter:
 
     def write_package(self, dbname: str, package: Dict[str, str]):
         self._write_package(dbname, package)
-        self._write_package_sums(dbname, package)
-        self._write_package_license(dbname, package)
+        self._write_sums(dbname, package)
+        self._write_licenses(dbname, package)
+        self._write_groups(dbname, package)
 
         depends_types = [
             "depends",
@@ -64,7 +66,7 @@ class SqlWriter:
             "filename": package.get('FILENAME', None)
         })
 
-    def _write_package_sums(self, dbname: str, package: Dict[str, str]):
+    def _write_sums(self, dbname: str, package: Dict[str, str]):
         sums = []
 
         for key, value in package.items():
@@ -81,20 +83,34 @@ class SqlWriter:
         if not sums:
             return
 
-        self._db.executemany(insert_package_sum_stmt, sums)
+        self._db.executemany(insert_sums_stmt, sums)
 
-    def _write_package_license(self, dbname: str, package: Dict[str, str]):
+    def _write_licenses(self, dbname: str, package: Dict[str, str]):
         licenses = package.get("LICENSE", None)
 
         if not licenses:
             return
 
-        self._db.executemany(insert_package_license_stmt, [
+        self._db.executemany(insert_licenses_stmt, [
             {
                 "db": dbname,
                 "package": package.get('NAME'),
                 "license": l
             } for l in licenses.splitlines(keepends=False)
+        ])
+
+    def _write_groups(self, dbname: str, package: Dict[str, str]):
+        groups = package.get("GROUPS", None)
+
+        if not groups:
+            return
+
+        self._db.executemany(insert_groups_stmt, [
+            {
+                "db": dbname,
+                "package": package.get('NAME'),
+                "group_name": g
+            } for g in groups.splitlines(keepends=False)
         ])
 
     def _write_depends(self, dbname: str, type: str, package: Dict[str, str]):

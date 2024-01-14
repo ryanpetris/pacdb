@@ -18,19 +18,25 @@ init_db_data = """
         PRIMARY KEY (db, package)
     );
 
-    CREATE TABLE package_sums (
+    CREATE TABLE sums (
         db TEXT,
         package TEXT,
         type TEXT,
         sum TEXT
     );
-    
-    CREATE TABLE package_license (
+
+    CREATE TABLE licenses (
         db TEXT,
         package TEXT,
         license TEXT
     );
     
+    CREATE TABLE groups (
+        db TEXT,
+        package TEXT,
+        group_name TEXT
+    );
+
     CREATE TABLE depends (
         db TEXT,
         package TEXT,
