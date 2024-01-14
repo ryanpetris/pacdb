@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 NAME = 'pacdb'
-VERSION = '0.0.1'
+VERSION = '1.0.0'
 DESCRIPTION = 'Pacman DB to SQLite Converter'
 LONG_DESCRIPTION = 'Covnerts pacman sync databases to an sqlite database for easier querying.'
 AUTHOR = 'Ryan Petris'
