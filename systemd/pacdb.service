@@ -1,0 +1,6 @@
+[Unit]
+Description=pacdb Refresh Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/pacdb

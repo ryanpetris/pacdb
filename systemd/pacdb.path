@@ -1,0 +1,5 @@
+[Path]
+PathModified=/var/lib/pacman/sync
+
+[Install]
+WantedBy=multi-user.target
