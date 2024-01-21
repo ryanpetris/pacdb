@@ -76,3 +76,10 @@ insert_replaces_stmt = """
     VALUES
         (:db, :package, :replace_package, :version, :comparator);
 """
+
+insert_files_stmt = """
+    INSERT INTO files
+        (db, package, file)
+    VALUES
+        (:db, :package, :file);
+"""

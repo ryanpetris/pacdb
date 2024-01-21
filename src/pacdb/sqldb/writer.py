@@ -4,7 +4,20 @@ import re
 import sqlite3
 
 from .initdb import init_db_data
-from .statements import insert_package_stmt, insert_sums_stmt, insert_licenses_stmt, insert_groups_stmt, insert_depends_stmt, insert_make_depends_stmt, insert_check_depends_stmt, insert_opt_depends_stmt, insert_provides_stmt, insert_conflicts_stmt, insert_replaces_stmt
+from .statements import (
+    insert_package_stmt,
+    insert_sums_stmt,
+    insert_licenses_stmt,
+    insert_groups_stmt,
+    insert_depends_stmt,
+    insert_make_depends_stmt,
+    insert_check_depends_stmt,
+    insert_opt_depends_stmt,
+    insert_provides_stmt,
+    insert_conflicts_stmt,
+    insert_replaces_stmt,
+    insert_files_stmt
+)
 from typing import Dict
 
 
@@ -17,7 +30,7 @@ class SqlWriter:
         self._file: str = file
 
     def __enter__(self):
-        self._db: sqlite3.Connection = sqlite3.connect(self._file)
+        self._db: sqlite3.Connection = sqlite3.connect(self._file, isolation_level="EXCLUSIVE")
         self._db.executescript(init_db_data)
 
         return self
@@ -48,6 +61,8 @@ class SqlWriter:
 
         for depend_type in depends_types:
             self._write_depends(dbname, depend_type, package)
+
+        self._write_files(dbname, package)
 
     def _write_package(self, dbname: str, package: Dict[str, str]):
         self._db.execute(insert_package_stmt, {
@@ -174,6 +189,20 @@ class SqlWriter:
             data.append(pkgdata)
 
         self._db.executemany(stmt, data)
+
+    def _write_files(self, dbname: str, package: Dict[str, str]):
+        files = package.get("FILES", None)
+
+        if not files:
+            return
+
+        self._db.executemany(insert_files_stmt, [
+            {
+                "db": dbname,
+                "package": package.get('NAME'),
+                "file": f
+            } for f in files.splitlines(keepends=False)
+        ])
 
     def _parse_package(self, package) -> Dict[str, str]:
         match = re.match('^(?P<name>[a-z0-9@_+][a-z0-9@._+-]*)((?P<comparator>[<>=]+)(?P<version>[^:/ ]+)?)?(: *(?P<description>.*))?$', package, re.RegexFlag.IGNORECASE)

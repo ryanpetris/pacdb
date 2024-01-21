@@ -14,8 +14,7 @@ init_db_data = """
         pgp_signature TEXT,
         build_timestamp INT,
         packager TEXT,
-        filename TEXT,
-        PRIMARY KEY (db, package)
+        filename TEXT
     );
 
     CREATE TABLE sums (
@@ -92,5 +91,11 @@ init_db_data = """
         replace_package TEXT,
         version TEXT,
         comparator TEXT
+    );
+
+    CREATE TABLE files (
+        db TEXT,
+        package TEXT,
+        file TEXT
     );
 """
