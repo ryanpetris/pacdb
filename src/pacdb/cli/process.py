@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import sys
 
 from ..dbreader import DbReader
 from ..sqldb import SqlWriter
@@ -33,6 +34,7 @@ def main():
         os.remove(database_temp_path)
 
     databases = []
+    include_files = len(sys.argv) < 2 or sys.argv[1] != "--no-files"
 
     for item in os.listdir(PACMAN_SYNC_DIR):
         fullpath = f"{PACMAN_SYNC_DIR}/{item}"
@@ -44,15 +46,17 @@ def main():
             continue
 
         db_name = item[:len(item) - 3]
-        files_db_fullpath = f"{PACMAN_SYNC_DIR}/{db_name}.files"
 
         entry = {
             "name": db_name,
             "path": fullpath
         }
 
-        if os.path.isfile(files_db_fullpath):
-            entry["files_path"] = files_db_fullpath
+        if include_files:
+            files_db_fullpath = f"{PACMAN_SYNC_DIR}/{db_name}.files"
+
+            if os.path.isfile(files_db_fullpath):
+                entry["files_path"] = files_db_fullpath
 
         databases.append(entry)
 
