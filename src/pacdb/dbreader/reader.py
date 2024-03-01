@@ -3,10 +3,9 @@ import os.path
 import sys
 
 from collections.abc import Iterator
-from gzip import GzipFile
 from io import BytesIO
 from tarfile import TarFile, TarInfo
-from typing import Dict, IO, Optional, Union
+from typing import Dict, IO
 
 
 class DbReader(Iterator):
@@ -15,17 +14,17 @@ class DbReader(Iterator):
         return self._db
 
     @property
-    def files_db(self) -> Optional[str]:
+    def files_db(self) -> str | None:
         return self._files_db
 
-    def __init__(self, db: str, files_db: Optional[str] = None):
+    def __init__(self, db: str, files_db: str | None = None):
         self._db: str = db
-        self._files_db: Optional[str] = files_db
+        self._files_db: str | None = files_db
 
     def __enter__(self):
         self._db_tar: TarFile = TarFile.open(self._db, 'r:gz')
-        self._files_db_tar: Optional[TarFile] = None
-        self._files_db_files: Optional[Dict[str, TarInfo]] = None
+        self._files_db_tar: TarFile | None = None
+        self._files_db_files: Dict[str, TarInfo] | None = None
 
         if self._files_db:
             self._files_db_tar: TarFile = TarFile.open(self._files_db, 'r:gz')
@@ -54,7 +53,7 @@ class DbReader(Iterator):
             if member.isfile() and os.path.basename(member.name) == "files"
         }
 
-    def get_next_file(self) -> Optional[TarInfo]:
+    def get_next_file(self) -> TarInfo | None:
         while True:
             item = self._db_tar.next()
 
@@ -109,7 +108,9 @@ class DbReader(Iterator):
                 with self._files_db_tar.extractfile(files_tar_info) as f:
                     process_lines(f)
             else:
-                print(f"Package {pkgname} with version {pkgversion} missing in files db. Please ensure Sync and Files databases are in sync.", file=sys.stderr)
+                print(
+                    f"Package {pkgname} with version {pkgversion} missing in files db. Please ensure Sync and Files databases are in sync.",
+                    file=sys.stderr)
 
         return {k: v.getvalue().decode('utf-8').rstrip('\n') for k, v in result.items()}
 

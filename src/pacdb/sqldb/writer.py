@@ -2,6 +2,7 @@
 
 import re
 import sqlite3
+from typing import Dict
 
 from .initdb import init_db_data
 from .statements import (
@@ -18,7 +19,6 @@ from .statements import (
     insert_replaces_stmt,
     insert_files_stmt
 )
-from typing import Dict
 
 
 class SqlWriter:
@@ -205,7 +205,9 @@ class SqlWriter:
         ])
 
     def _parse_package(self, package) -> Dict[str, str]:
-        match = re.match('^(?P<name>[a-z0-9@_+][a-z0-9@._+-]*)((?P<comparator>[<>=]+)(?P<version>[^:/ ]+)?)?(: *(?P<description>.*))?$', package, re.RegexFlag.IGNORECASE)
+        match = re.match(
+            '^(?P<name>[a-z0-9@_+][a-z0-9@._+-]*)((?P<comparator>[<>=]+)(?P<version>[^:/ ]+)?)?(: *(?P<description>.*))?$',
+            package, re.RegexFlag.IGNORECASE)
 
         if not match:
             raise Exception(f"Invalid package name {package}")

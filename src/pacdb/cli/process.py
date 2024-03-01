@@ -6,14 +6,13 @@ import sys
 
 from ..dbreader import DbReader
 from ..sqldb import SqlWriter
-from typing import Optional
 
 PACMAN_SYNC_DIR = "/var/lib/pacman/sync"
 PACDB_DIR = "/var/lib/pacdb"
 PACDB_FILENAME = "pacman.sqlite"
 
 
-def process_db(dbname: str, dbpath: str, filesdbpath: Optional[str], writer: SqlWriter):
+def process_db(dbname: str, dbpath: str, filesdbpath: str | None, writer: SqlWriter):
     with DbReader(dbpath, filesdbpath) as reader:
         for pkg in reader:
             writer.write_package(dbname, pkg)
